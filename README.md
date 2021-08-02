@@ -2,9 +2,9 @@
 
 A simple Maven plugin to generate test report from Cucumber JSON, especially one that contains Pokemon stuff.
 
-Created to (hopefully) improve my flexibility on displaying things i want to see in my Test Report.
+Created to (hopefully) improve my flexibility to display things i want to see in my Test Report.
 
-Mostly built using Jackson and Pebble Templates.
+Built mainly using Jackson and Pebble Templates.
 
 You can see the report example [here](https://poke-reporting.bitbucket.io/).
 
@@ -12,8 +12,8 @@ You can see the report example [here](https://poke-reporting.bitbucket.io/).
 
 ## Prerequisites
 - Your testing project uses Cucumber and generates JSON as an output
-- You have GitHub account
-- You can bear the pain of using unfinished project (such as this one)
+- You have an GitHub account
+- You can bear the pain of using pet project (such as this one)
 
 
 ## Usage Guide
@@ -44,17 +44,17 @@ Create `settings.xml` file in `~/.m2/` directory and copy the snippet below. If 
     <server>
       <id>github</id>
       <username>YOUR_GITHUB_USERNAME</username>
-      <password>YOUR_PERSONAL_ACCESS_TOKEN</password>
+      <password>YOUR_GITHUB_PERSONAL_ACCESS_TOKEN</password>
     </server>
   </servers>
 </settings>
 ```
-Note that the snippet uses `pluginRepositories` instead of the usual `repositories` because this project would be used as a Maven plugin.
+Note that the snippet uses `pluginRepositories` instead of the usual `repositories` because this project will be used as a Maven plugin.
 Also paste your GitHub username and PAT there. Your GitHub PAT also needs to have `read:packages` scope access (more about this [here](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries)). 
 
 After that, include the plugin into your project by adding this snippet into your `pom.xml` file.
 ```
-<build>
+    </build>
         <plugins>
             <plugin>
                 <groupId>org.ubaifadhli.future</groupId>
@@ -76,10 +76,12 @@ After that, include the plugin into your project by adding this snippet into you
 
 You're pretty much done. Congratulations!
 
-## Why do I have to provide my GitHub credentials?
-I want to ask the same thing, too. 
+Because the plugin will be executed in `post-integration-test` phase, you can run your project using `mvn clean verify` command.
 
-In short, access to read packages are currently limited to GitHub users. So even though it's someone else's package, you still need to provide your GitHub credentials to access it.
+## Why do I have to provide my GitHub credentials?
+I want to ask the same thing to GitHub, too. 
+
+In short, access to read packages are currently limited to GitHub users. So even though someone else's package is public, you still have to provide your GitHub credentials to access it.
 
 I'm just summarizing information I read from this [StackOverflow answer](https://stackoverflow.com/a/67776304), maybe you want to check that out instead.
 
@@ -88,5 +90,4 @@ I'm just summarizing information I read from this [StackOverflow answer](https:/
 | ----------- | ----------- |
 | target/cucumber-report/cucumber.json | Path where my plugin expects the Cucumber output will be |
 | target/poke-report | Path where the report would be generated |
-
 
