@@ -54,7 +54,7 @@ Also paste your GitHub username and PAT there. Your GitHub PAT also needs to hav
 
 After that, include the plugin into your project by adding this snippet into your `pom.xml` file.
 ```
-    </build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.ubaifadhli.future</groupId>
