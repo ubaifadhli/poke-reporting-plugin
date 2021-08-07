@@ -147,11 +147,11 @@
 
                                     {% if step.after[0].embeddings[0].dataText is not null %}
                                     <div class="d-block border border-dark my-2 px-2 pt-2 d-block">
-                                        <pre><code>{{ step.after[0].embeddings[0].dataText }}</code></pre>
+                                        <pre><code>{{ step.after[0].embeddings[0].dataText }}<br><a href="attachments/{{ step.after[0].embeddings[0].fileName }}" target="_blank">Full text</a></code></pre>
                                     </div>
                                     {% endif %}
 
-                                    {% if step.after[0].embeddings[0].fileName is not null %}
+                                    {% if step.after[0].embeddings[0].fileName contains "png" %}
                                     <div class="d-block">
                                         <img src="attachments/{{ step.after[0].embeddings[0].fileName }}" height="180px">
                                     </div>

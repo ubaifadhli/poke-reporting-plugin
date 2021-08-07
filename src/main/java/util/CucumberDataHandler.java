@@ -26,6 +26,12 @@ public class CucumberDataHandler {
         this.cucumberFeature = cucumberFeatures.get(0);
     }
 
+    public void calculateAdditionalData() {
+        calculateScenarioEndTimestamp();
+        calculateScenarioDuration();
+        determineScenarioStatus();
+    }
+
     public Timestamp getTestStartTime() {
         return cucumberFeature.getScenarios().get(0).getStartTimestamp();
     }
@@ -35,14 +41,11 @@ public class CucumberDataHandler {
     }
 
     public Timestamp getTestEndTime() {
-        Timestamp endTestTimestamp = cucumberFeature.getScenarios().get(0).getEndTimestamp();
-
-        for (CucumberScenario scenario : cucumberFeature.getScenarios()) {
-            if (endTestTimestamp.before(scenario.getEndTimestamp()))
-                endTestTimestamp = scenario.getEndTimestamp();
-        }
-
-        return endTestTimestamp;
+        return cucumberFeature.getScenarios()
+                .stream()
+                .map(CucumberScenario::getEndTimestamp)
+                .max(Timestamp::compareTo)
+                .get();
     }
 
     public int getTotalScenario() {
@@ -50,28 +53,20 @@ public class CucumberDataHandler {
     }
 
     public int getFailedScenarioCount() {
-        int failedScenarioCount = 0;
-        for (CucumberScenario scenario : cucumberFeature.getScenarios())
-            if (!scenario.isPassed())
-                failedScenarioCount++;
-
-        return failedScenarioCount;
+        return (int) cucumberFeature.getScenarios()
+                .stream()
+                .filter(cucumberScenario -> !cucumberScenario.isPassed())
+                .count();
     }
 
-    public void calculateAdditionalData() {
-        calculateScenarioEndTimestamp();
-        calculateScenarioDuration();
-        determineScenarioStatus();
+    private void calculateScenarioDuration() {
+        cucumberFeature.getScenarios().forEach(cucumberScenario -> {
+            Duration scenarioDuration = DatetimeHelper.between(cucumberScenario.getStartTimestamp(), cucumberScenario.getEndTimestamp());
+            cucumberScenario.setDuration(scenarioDuration.getSeconds());
+        });
     }
 
-    public void calculateScenarioDuration() {
-        for (CucumberScenario scenario : cucumberFeature.getScenarios()) {
-            Duration scenarioDuration = DatetimeHelper.between(scenario.getStartTimestamp(), scenario.getEndTimestamp());
-            scenario.setDuration(scenarioDuration.getSeconds());
-        }
-    }
-
-    public void calculateScenarioEndTimestamp() {
+    private void calculateScenarioEndTimestamp() {
         for (CucumberScenario scenario : cucumberFeature.getScenarios()) {
             Timestamp timestamp = scenario.getStartTimestamp();
 
@@ -107,13 +102,13 @@ public class CucumberDataHandler {
         }
     }
 
-    public void determineScenarioStatus() {
-        for (CucumberScenario scenario : cucumberFeature.getScenarios()) {
-            List<CucumberStep> steps = scenario.getSteps();
+    private void determineScenarioStatus() {
+        cucumberFeature.getScenarios().forEach(cucumberScenario -> {
+            List<CucumberStep> steps = cucumberScenario.getSteps();
 
             CucumberStep lastStep = steps.get(steps.size() - 1);
 
-            scenario.setPassed(lastStep.getResult().getStatus().equals("passed"));
-        }
+            cucumberScenario.setPassed(lastStep.getResult().getStatus().equals("passed"));
+        });
     }
 }

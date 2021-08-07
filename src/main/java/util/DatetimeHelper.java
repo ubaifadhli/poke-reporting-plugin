@@ -20,20 +20,40 @@ public class DatetimeHelper {
     public static String toMinutesSeconds(Duration duration) {
         StringBuilder testDurationText = new StringBuilder();
 
-        if (duration.toMinutes() == 1)
-            testDurationText.append("1 minute ");
-        else if (duration.toMinutes() > 1)
-            testDurationText
-                    .append(duration.toMinutes())
-                    .append(" minutes ");
+        long seconds = duration.getSeconds() % 60;
 
-        if (duration.getSeconds() % 60 == 1)
-            testDurationText.append("1 second");
-        else if (duration.getSeconds() % 60 > 1)
-            testDurationText
-                    .append(duration.getSeconds() % 60)
-                    .append(" seconds");
+        String hourText = formatTextInUnit(duration.toHours(), "hour");
+        String minutesText = formatTextInUnit(duration.toMinutes(), "minute");
+        String secondsText = formatTextInUnit(seconds, "second");
+
+        testDurationText.append(hourText);
+
+        if (minutesText.length() > 0 && testDurationText.length() > 0)
+            testDurationText.append(" ");
+
+        testDurationText.append(minutesText);
+
+        if (secondsText.length() > 0 && testDurationText.length() > 0)
+            testDurationText.append(" ");
+
+        testDurationText.append(secondsText);
 
         return testDurationText.toString();
+    }
+
+    private static String formatTextInUnit(long unitValue, String unitName) {
+        StringBuilder text = new StringBuilder();
+
+        if (unitValue > 0) {
+            text
+                    .append(unitValue)
+                    .append(" ")
+                    .append(unitName);
+
+            if (unitValue > 1)
+                text.append("s");
+        }
+
+        return text.toString();
     }
 }

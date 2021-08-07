@@ -25,13 +25,11 @@ import java.util.Map;
 @Slf4j
 @Mojo(name = "reporting", defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST)
 public class ReportingMojo extends AbstractMojo {
-    private final int CHARACTER_LIMIT = 256;
-
     @Inject
     CucumberDataHandler cucumberDataHandler;
 
     @Inject
-    ImageHelper imageHelper;
+    FileHelper fileHelper;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -72,7 +70,7 @@ public class ReportingMojo extends AbstractMojo {
                     switch (embedding.getMimeType()) {
                         case "image/png":
                             try {
-                                String imageName = imageHelper.saveImage(embedding.getData());
+                                String imageName = fileHelper.saveImage(embedding.getData());
                                 embedding.setFileName(imageName);
 
                             } catch (IOException e) {
@@ -81,15 +79,16 @@ public class ReportingMojo extends AbstractMojo {
                             break;
 
                         case "text/plain":
-                            // TODO make it expandable
-                            String dataText = new String(embedding.getData());
+                            try {
+                                String dataText = fileHelper.limitStringLength(embedding.getData());
+                                String textFileName = fileHelper.saveText(embedding.getData());
 
-                            if (dataText.length() > CHARACTER_LIMIT) {
-                                int remainingCharacter = dataText.length() - CHARACTER_LIMIT;
-                                dataText = dataText.substring(0, CHARACTER_LIMIT) + "\\\r\\\n... and " + remainingCharacter + " more characters.";
+                                embedding.setDataText(dataText);
+                                embedding.setFileName(textFileName);
+                            } catch (IOException e) {
+                                log.error("Failed to create text file.");
+                                e.printStackTrace();
                             }
-
-                            embedding.setDataText(dataText);
                             break;
                     }
                 }
@@ -106,10 +105,8 @@ public class ReportingMojo extends AbstractMojo {
         context.put("testDuration", testDurationText);
         context.put("scenarios", scenarios);
 
-        String output;
-
         try {
-            output = TemplateEngine.generateReport(context);
+            String output = TemplateEngine.generateReport(context);
 
             Path path = Paths.get(FilePath.DEFAULT_REPORT_PATH + FilePath.DEFAULT_REPORT_FILE_NAME);
             Files.write(path, output.getBytes(StandardCharsets.UTF_8));
