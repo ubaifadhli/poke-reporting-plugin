@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 
 @Singleton
 public class FileHelper {
-    private final int CHARACTER_LIMIT = 256;
+    private final int CHARACTER_LIMIT = 512;
     private int imageCount = 0;
     private int textCount = 0;
 

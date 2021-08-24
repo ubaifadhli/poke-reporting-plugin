@@ -33,6 +33,8 @@ public class ReportingMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        long startTime = System.currentTimeMillis();
+
         try {
             cucumberDataHandler.loadJSON(FilePath.DEFAULT_CUCUMBER_PATH + FilePath.CUCUMBER_FILE_NAME);
             log.info("Cucumber JSON file has been loaded.");
@@ -111,7 +113,11 @@ public class ReportingMojo extends AbstractMojo {
             Path path = Paths.get(FilePath.DEFAULT_REPORT_PATH + FilePath.DEFAULT_REPORT_FILE_NAME);
             Files.write(path, output.getBytes(StandardCharsets.UTF_8));
 
-            log.info("Report has been successfully generated.");
+            long endTime = System.currentTimeMillis();
+
+            Duration elapsedTime = DatetimeHelper.between(new Timestamp(startTime), new Timestamp(endTime));
+
+            log.info("Report has been successfully generated in {}.", DatetimeHelper.toMinutesSeconds(elapsedTime));
         } catch (IOException e) {
             log.error("Failed to generate the report.");
         }
