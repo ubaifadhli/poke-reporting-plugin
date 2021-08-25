@@ -59,7 +59,7 @@ After that, include the plugin into your project by adding this snippet into you
             <plugin>
                 <groupId>org.ubaifadhli.future</groupId>
                 <artifactId>poke-reporting-plugin</artifactId>
-                <version>1.1</version>
+                <version>1.3</version>
                 <executions>
                     <execution>
                         <id>report</id>
