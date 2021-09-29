@@ -13,7 +13,6 @@ You can see the report example [here](https://poke-reporting.bitbucket.io/).
 ## Prerequisites
 - Your testing project uses Cucumber and generates JSON as an output
 - You have an GitHub account
-- You can bear the pain of using pet project (such as this one)
 
 
 ## Usage Guide
@@ -34,7 +33,7 @@ Create `settings.xml` file in `~/.m2/` directory and copy the snippet below. If 
       <pluginRepositories>
         <pluginRepository>
           <id>github</id>
-          <url>https://maven.pkg.github.com/ubaifadhli/poke-reporting-plugin</url>
+          <url>https://maven.pkg.github.com/ubaifadhli/*</url>
         </pluginRepository>
       </pluginRepositories>
     </profile>
@@ -59,7 +58,7 @@ After that, include the plugin into your project by adding this snippet into you
             <plugin>
                 <groupId>org.ubaifadhli.future</groupId>
                 <artifactId>poke-reporting-plugin</artifactId>
-                <version>1.1</version>
+                <version>1.3</version>
                 <executions>
                     <execution>
                         <id>report</id>
