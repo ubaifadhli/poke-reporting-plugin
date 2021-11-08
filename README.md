@@ -4,7 +4,7 @@ A simple Maven plugin to generate test report from Cucumber JSON, especially one
 
 Created to (hopefully) improve my flexibility to display things i want to see in my Test Report.
 
-Built mainly using Jackson and Pebble Templates.
+Built mainly using Jackson and Pebble Templates, published on JitPack.
 
 You can see the report example [here](https://poke-reporting.bitbucket.io/).
 
@@ -12,53 +12,24 @@ You can see the report example [here](https://poke-reporting.bitbucket.io/).
 
 ## Prerequisites
 - Your testing project uses Cucumber and generates JSON as an output
-- You have an GitHub account
 
 
 ## Usage Guide
-Create `settings.xml` file in `~/.m2/` directory and copy the snippet below. If you already have one, adjust accordingly. 
+Add this snippet into your `pom.xml` file. `<pluginRepositories>` tag is needed because I use JitPack to publish this plugin.
 ```
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
-
-  <activeProfiles>
-    <activeProfile>github</activeProfile>
-  </activeProfiles>
-
-  <profiles>
-    <profile>
-      <id>github</id>
-      <pluginRepositories>
+    <pluginRepositories>
         <pluginRepository>
-          <id>github</id>
-          <url>https://maven.pkg.github.com/ubaifadhli/*</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </pluginRepository>
-      </pluginRepositories>
-    </profile>
-  </profiles>
+    </pluginRepositories>
 
-  <servers>
-    <server>
-      <id>github</id>
-      <username>YOUR_GITHUB_USERNAME</username>
-      <password>YOUR_GITHUB_PERSONAL_ACCESS_TOKEN</password>
-    </server>
-  </servers>
-</settings>
-```
-Note that the snippet uses `pluginRepositories` instead of the usual `repositories` because this project will be used as a Maven plugin.
-Also paste your GitHub username and PAT there. Your GitHub PAT also needs to have `read:packages` scope access (more about this [here](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries)). 
-
-After that, include the plugin into your project by adding this snippet into your `pom.xml` file.
-```
     <build>
         <plugins>
             <plugin>
-                <groupId>org.ubaifadhli.future</groupId>
+                <groupId>com.github.ubaifadhli</groupId>
                 <artifactId>poke-reporting-plugin</artifactId>
-                <version>1.3</version>
+                <version>1.3.2</version>
                 <executions>
                     <execution>
                         <id>report</id>
@@ -76,13 +47,6 @@ After that, include the plugin into your project by adding this snippet into you
 You're pretty much done. Congratulations!
 
 Because the plugin will be executed in `post-integration-test` phase, you can run your project using `mvn clean verify` command.
-
-## Why do I have to provide my GitHub credentials?
-I want to ask the same thing to GitHub, too. 
-
-In short, access to read packages are currently limited to GitHub users. So even though someone else's package is public, you still have to provide your GitHub credentials to access it.
-
-I'm just summarizing information I read from this [StackOverflow answer](https://stackoverflow.com/a/67776304), maybe you want to check that out instead.
 
 ## File Path Information
 | Path | Description | 

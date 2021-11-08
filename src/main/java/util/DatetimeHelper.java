@@ -52,7 +52,10 @@ public class DatetimeHelper {
 
             if (unitValue > 1)
                 text.append("s");
-        }
+
+        } else
+            if (unitName.equals("second"))
+                text.append("less than a second");
 
         return text.toString();
     }

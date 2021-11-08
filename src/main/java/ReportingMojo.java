@@ -40,7 +40,7 @@ public class ReportingMojo extends AbstractMojo {
             log.info("Cucumber JSON file has been loaded.");
 
         } catch (IOException e) {
-            log.error("Cucumber JSON could not be loaded. Please make sure that the JSON exist in " + FilePath.DEFAULT_CUCUMBER_PATH);
+            throw new MojoExecutionException("Cucumber JSON could not be loaded. Please make sure that the JSON exist in " + FilePath.DEFAULT_CUCUMBER_PATH, e);
         }
 
         cucumberDataHandler.calculateAdditionalData();
@@ -111,6 +111,9 @@ public class ReportingMojo extends AbstractMojo {
             String output = TemplateEngine.generateReport(context);
 
             Path path = Paths.get(FilePath.DEFAULT_REPORT_PATH + FilePath.DEFAULT_REPORT_FILE_NAME);
+
+            path.getParent().toFile().mkdirs();
+
             Files.write(path, output.getBytes(StandardCharsets.UTF_8));
 
             long endTime = System.currentTimeMillis();
@@ -118,8 +121,11 @@ public class ReportingMojo extends AbstractMojo {
             Duration elapsedTime = DatetimeHelper.between(new Timestamp(startTime), new Timestamp(endTime));
 
             log.info("Report has been successfully generated in {}.", DatetimeHelper.toMinutesSeconds(elapsedTime));
+
+            // TODO Add log linking to the index.html path
+
         } catch (IOException e) {
-            log.error("Failed to generate the report.");
+            throw new MojoExecutionException("Failed to generate the report.", e);
         }
     }
 }
