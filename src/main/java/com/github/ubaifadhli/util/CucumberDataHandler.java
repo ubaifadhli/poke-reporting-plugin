@@ -72,10 +72,13 @@ public class CucumberDataHandler {
 
             Long scenarioDuration = 0L;
 
-            if (scenario.getBefore().get(0).getResult().getDuration() != null)
+            boolean scenarioHasBeforeStep = scenario.getBefore() != null;
+            boolean scenarioHasAfterStep = scenario.getAfter() != null;
+
+            if (scenarioHasBeforeStep && scenario.getBefore().get(0).getResult().getDuration() != null)
                 scenarioDuration += scenario.getBefore().get(0).getResult().getDuration();
 
-            if (scenario.getAfter().get(0).getResult().getDuration() != null)
+            if (scenarioHasAfterStep && scenario.getAfter().get(0).getResult().getDuration() != null)
                 scenarioDuration += scenario.getAfter().get(0).getResult().getDuration();
 
             for (CucumberStep step : scenario.getSteps()) {
