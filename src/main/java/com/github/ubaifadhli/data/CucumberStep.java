@@ -16,4 +16,12 @@ public class CucumberStep {
     CucumberResult result;
     List<CucumberHook> before;
     List<CucumberHook> after;
+
+    public boolean hasBefore() {
+        return before != null;
+    }
+
+    public boolean hasAfter() {
+        return after != null;
+    }
 }

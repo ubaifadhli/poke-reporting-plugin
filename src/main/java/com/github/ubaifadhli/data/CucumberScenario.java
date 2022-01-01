@@ -25,6 +25,14 @@ public class CucumberScenario {
     List<CucumberHook> after;
     List<CucumberStep> steps;
 
+    public boolean hasBefore() {
+        return before != null;
+    }
+
+    public boolean hasAfter() {
+        return after != null;
+    }
+
     // Custom needed variable
     Timestamp endTimestamp; // Not precise in nanoseconds, because i don't want to
     Long duration;
