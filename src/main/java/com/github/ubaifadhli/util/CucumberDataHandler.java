@@ -1,10 +1,10 @@
-package util;
+package com.github.ubaifadhli.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import data.CucumberScenario;
-import data.CucumberFeature;
-import data.CucumberStep;
+import com.github.ubaifadhli.data.CucumberScenario;
+import com.github.ubaifadhli.data.CucumberFeature;
+import com.github.ubaifadhli.data.CucumberStep;
 
 import javax.inject.Singleton;
 import java.io.IOException;

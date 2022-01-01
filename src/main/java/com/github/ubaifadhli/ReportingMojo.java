@@ -1,14 +1,16 @@
-import data.CucumberEmbedding;
-import data.CucumberHook;
-import data.CucumberScenario;
-import data.CucumberStep;
+package com.github.ubaifadhli;
+
+import com.github.ubaifadhli.data.CucumberEmbedding;
+import com.github.ubaifadhli.data.CucumberHook;
+import com.github.ubaifadhli.data.CucumberScenario;
+import com.github.ubaifadhli.data.CucumberStep;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import util.*;
+import com.github.ubaifadhli.util.*;
 
 import javax.inject.Inject;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package util;
+package com.github.ubaifadhli.util;
 
 import javax.imageio.ImageIO;
 import javax.inject.Singleton;

@@ -1,4 +1,4 @@
-package util;
+package com.github.ubaifadhli.util;
 
 public interface FilePath {
     String CUCUMBER_FILE_NAME = "cucumber.json";

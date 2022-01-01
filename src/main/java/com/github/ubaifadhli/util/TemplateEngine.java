@@ -1,4 +1,4 @@
-package util;
+package com.github.ubaifadhli.util;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;

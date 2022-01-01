@@ -1,4 +1,4 @@
-package data;
+package com.github.ubaifadhli.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

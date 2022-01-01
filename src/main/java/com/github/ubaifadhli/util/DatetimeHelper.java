@@ -1,4 +1,4 @@
-package util;
+package com.github.ubaifadhli.util;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
