@@ -4,6 +4,7 @@ import com.github.ubaifadhli.data.CucumberEmbedding;
 import com.github.ubaifadhli.data.CucumberHook;
 import com.github.ubaifadhli.data.CucumberScenario;
 import com.github.ubaifadhli.data.CucumberStep;
+import com.github.ubaifadhli.exceptions.CucumberFileNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -42,7 +43,7 @@ public class ReportingMojo extends AbstractMojo {
             log.info("Cucumber JSON file has been loaded.");
 
         } catch (IOException e) {
-            throw new MojoExecutionException("Cucumber JSON could not be loaded. Please make sure that the JSON exist in " + FilePath.DEFAULT_CUCUMBER_PATH, e);
+            throw new CucumberFileNotFoundException(e);
         }
 
         cucumberDataHandler.calculateAdditionalData();
@@ -64,38 +65,44 @@ public class ReportingMojo extends AbstractMojo {
         // Create PNG screenshot files from the MIME
         for (CucumberScenario scenario : scenarios) {
             for (CucumberStep step : scenario.getSteps()) {
-                CucumberHook after = step.getAfter().get(0);
+                if (step.hasAfter()) {
+                    CucumberHook after = step.getAfter().get(0);
 
-                CucumberEmbedding embedding;
+                    CucumberEmbedding embedding;
 
-                if (after.getEmbeddings() != null) {
-                    embedding = after.getEmbeddings().get(0);
+                    if (after.getEmbeddings() != null) {
+                        embedding = after.getEmbeddings().get(0);
 
-                    switch (embedding.getMimeType()) {
-                        case "image/png":
-                            try {
-                                String imageName = fileHelper.saveImage(embedding.getData());
-                                embedding.setFileName(imageName);
+                        switch (embedding.getMimeType()) {
+                            case "image/png":
+                                try {
+                                    String imageName = fileHelper.saveImage(embedding.getData());
+                                    embedding.setFileName(imageName);
 
-                            } catch (IOException e) {
-                                log.error("Failed to create image file.");
-                            }
-                            break;
+                                } catch (IOException e) {
+                                    // throw mojo error here
+                                    log.error("Failed to create image file.");
+                                }
+                                break;
 
-                        case "text/plain":
-                            try {
-                                String dataText = fileHelper.limitStringLength(embedding.getData());
-                                String textFileName = fileHelper.saveText(embedding.getData());
+                            case "text/plain":
+                                try {
+                                    String dataText = fileHelper.limitStringLength(embedding.getData());
+                                    String textFileName = fileHelper.saveText(embedding.getData());
 
-                                embedding.setDataText(dataText);
-                                embedding.setFileName(textFileName);
-                            } catch (IOException e) {
-                                log.error("Failed to create text file.");
-                                e.printStackTrace();
-                            }
-                            break;
+                                    embedding.setDataText(dataText);
+                                    embedding.setFileName(textFileName);
+                                } catch (IOException e) {
+                                    // throw mojo error here
+                                    log.error("Failed to create text file.");
+                                    e.printStackTrace();
+                                }
+                                break;
+                        }
                     }
                 }
+
+
             }
         }
         log.info("Attachments have been created.");

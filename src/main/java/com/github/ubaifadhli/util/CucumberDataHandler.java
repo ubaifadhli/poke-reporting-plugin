@@ -2,8 +2,8 @@ package com.github.ubaifadhli.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.ubaifadhli.data.CucumberScenario;
 import com.github.ubaifadhli.data.CucumberFeature;
+import com.github.ubaifadhli.data.CucumberScenario;
 import com.github.ubaifadhli.data.CucumberStep;
 
 import javax.inject.Singleton;
@@ -67,26 +67,26 @@ public class CucumberDataHandler {
     }
 
     private void calculateScenarioEndTimestamp() {
-        for (CucumberScenario scenario : cucumberFeature.getScenarios()) {
+        cucumberFeature.getScenarios().forEach(scenario -> {
             Timestamp timestamp = scenario.getStartTimestamp();
 
             Long scenarioDuration = 0L;
 
             if (scenario.hasBefore())
-                scenarioDuration += scenario.getBefore().get(0).getResult().getDuration();
+                scenarioDuration += scenario.getFirstBeforeResultDuration();
 
             if (scenario.hasAfter())
-                scenarioDuration += scenario.getAfter().get(0).getResult().getDuration();
+                scenarioDuration += scenario.getFirstAfterResultDuration();
 
             for (CucumberStep step : scenario.getSteps()) {
                 if (step.getResult().getDuration() != null)
                     scenarioDuration += step.getResult().getDuration();
 
                 if (step.hasBefore())
-                    scenarioDuration += step.getBefore().get(0).getResult().getDuration();
+                    scenarioDuration += step.getFirstBeforeResultDuration();
 
                 if (step.hasAfter())
-                    scenarioDuration += step.getAfter().get(0).getResult().getDuration();
+                    scenarioDuration += step.getFirstAfterResultDuration();
             }
 
             Duration duration = Duration.ofNanos(scenarioDuration);
@@ -99,7 +99,7 @@ public class CucumberDataHandler {
             Timestamp endTime = new Timestamp(calendar.getTime().getTime());
 
             scenario.setEndTimestamp(endTime);
-        }
+        });
     }
 
     private void determineScenarioStatus() {
