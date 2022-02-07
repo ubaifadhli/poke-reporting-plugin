@@ -1,17 +1,17 @@
 package com.github.ubaifadhli.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class CucumberEmbedding {
+    private byte[] data;
+
     @JsonProperty("mime_type")
-    String mimeType;
+    private String mimeType;
 
-    byte[] data;
-    String name;
 
-    // Custom needed variable
-    String fileName;
-    String dataText;
+    @JsonIgnore
+    private String name;
 }

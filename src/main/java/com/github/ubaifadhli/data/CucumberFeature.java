@@ -8,16 +8,19 @@ import java.util.List;
 
 @Data
 public class CucumberFeature {
+    private String name;
+    private String id;
+    private String uri;
+
     @JsonProperty("elements")
-    List<CucumberScenario> scenarios;
+    private List<CucumberScenario> scenarios;
+    private List<CucumberTag> tags;
+
 
     @JsonIgnore
-    private String tags;
-
-    int line;
-    String name;
-    String description;
-    String id;
-    String keyword;
-    String uri;
+    private int line;
+    @JsonIgnore
+    private String description;
+    @JsonIgnore
+    private String keyword;
 }

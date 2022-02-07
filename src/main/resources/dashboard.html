@@ -1,0 +1,82 @@
+{% extends "base-dashboard.html" %}
+
+{% block testDate %}{{ data.testDate }}{% endblock %}
+{% block testDuration %}{{ data.testDuration }}{% endblock %}
+
+{% block totalPassedScenarios %}{{ data.totalPassedScenarios }}{% endblock %}
+{% block totalFailedScenarios %}{{ data.totalFailedScenarios }}{% endblock %}
+{% block totalSkippedScenarios %}{{ data.totalSkippedScenarios }}{% endblock %}
+
+{% block passedPercentage %}{{ data.passedPercentage }}{% endblock %}
+{% block failedPercentage %}{{ data.failedPercentage }}{% endblock %}
+{% block skippedPercentage %}{{ data.skippedPercentage }}{% endblock %}
+
+{% block featuresOverview %}
+    {% for feature in data.features %}
+    <li class="py-3 sm:py-4">
+        <div class="flex items-center space-x-6">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                    {{ feature.name }}
+                </p>
+                <p class="text-sm text-gray-500 truncate">
+                    {{ feature.totalPassedScenarios }} / {{ feature.totalScenarios }} scenarios passed
+                </p>
+                {% for tagName in feature.tagsName %}
+                <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{{ tagName }}</span>
+                {% endfor %}
+            </div>
+            <div class="inline-flex items-center text-base font-semibold text-gray-900">
+                {% if feature.isPassed %}
+                <span class="bg-green-100 text-green-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Passed</span>
+                {% else %}
+                <span class="bg-red-100 text-red-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Failed</span>
+                {% endif %}
+            </div>
+            <div class="inline-flex items-center text-cyan-600">
+                <a href="{{ feature.ID }}.html" class="hover:underline font-semibold">Detail</a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+{% endblock %}
+
+{% block tagsOverview %}
+{% for tag in data.tagsOverview %}
+<tr class="text-gray-500">
+    <th class="border-t-0 px-4 align-middle text-sm font-normal whitespace-nowrap p-4 text-left">
+        {{ tag.name }}
+    </th>
+    <td class="border-t-0 px-4 align-middle text-xs whitespace-nowrap p-4">
+        <div class="flex items-center">
+            <span class="mr-2 text-xs font-medium">{{ tag.passedPercentage }}%</span>
+            <div class="relative w-full">
+                <div class="w-full flex bg-gray-200 rounded-lg h-2">
+                    {% if tag.failedPercentage == 0 and tag.failedPercentage == 0 %}
+                    <div class="bg-green-600 h-2 rounded-lg" style="width: {{ tag.passedPercentage }}%"></div>
+                    {% else %}
+                    <div class="bg-green-600 h-2 rounded-l-lg" style="width: {{ tag.passedPercentage }}%"></div>
+                    {% endif %}
+
+                    {% if tag.passedPercentage == 0 and tag.skippedPercentage == 0 %}
+                    <div class="bg-red-600 h-2 rounded-lg" style="width: {{ tag.failedPercentage }}%"></div>
+                    {% elseif tag.passedPercentage > 0 and tag.skippedPercentage == 0 %}
+                    <div class="bg-red-600 h-2 rounded-r-lg" style="width: {{ tag.failedPercentage }}%"></div>
+                    {% elseif tag.passedPercentage == 0 and tag.skippedPercentage > 0 %}
+                    <div class="bg-red-600 h-2 rounded-l-lg" style="width: {{ tag.failedPercentage }}%"></div>
+                    {% else %}
+                    <div class="bg-red-600 h-2" style="width: {{ tag.failedPercentage }}%"></div>
+                    {% endif %}
+
+                    {% if tag.passedPercentage == 0 and tag.failedPercentage == 0 %}
+                    <div class="bg-yellow-600 h-2 rounded-lg" style="width: {{ tag.skippedPercentage }}%"></div>
+                    {% else %}
+                    <div class="bg-yellow-600 h-2 rounded-r-lg" style="width: {{ tag.skippedPercentage }}%"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% endblock %}

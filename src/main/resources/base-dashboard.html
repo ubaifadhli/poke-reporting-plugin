@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Test Report</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.3.2/dist/flowbite.min.css"/>
+</head>
+<body>
+<nav class="bg-white border-gray-200 px-2 sm:px-4 py-4 rounded">
+    <div class="container flex flex-wrap justify-between items-center mx-auto">
+        <a href="#" class="flex">
+            <img class="rounded-full mr-3 h-10"
+                 src="https://media.wired.com/photos/5f87340d114b38fa1f8339f9/master/w_1600%2Cc_limit/Ideas_Surprised_Pikachu_HD.jpg"
+                 alt="Pikachu">
+            <span class="self-center text-lg font-semibold whitespace-nowrap">Poke Reporting Plugin</span>
+        </a>
+    </div>
+</nav>
+
+<div class="bg-gray-100 p-4">
+    <div class="container mx-auto">
+        <div class="py-2 mb-4">
+            <p class="text-4xl font-bold py-1">Test Report</p>
+            <p class="py-1">{% block testDate %}{% endblock %}</p>
+            <p class="py-1">Ran for {% block testDuration %}{% endblock %}</p>
+        </div>
+
+        <div class="grid grid-cols-1 2xl:grid-cols-3 gap-4">
+            <div class="bg-white shadow rounded-lg p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">{% block totalPassedScenarios %}{% endblock %}</span>
+                        <h3 class="text-base font-normal text-gray-500">Scenarios passed</h3>
+                    </div>
+                    <div class="ml-5 w-0 flex items-center justify-end flex-1 text-green-500 text-base font-bold">
+                        <p class="text-lg mr-2">{% block passedPercentage %}{% endblock %}%</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                             class="w-8 h-8"
+                             viewBox="0 0 172 172"
+                             style=" fill:#000000;">
+                            <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                               stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                               style="mix-blend-mode: normal">
+                                <path d="M0,172v-172h172v172z" fill="none"></path>
+                                <g fill="#2ecc71">
+                                    <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
+                                    <path d="M129.86505,58.14798l-56.71465,55.33031l-30.96505,-31.75868c-1.10301,-1.13239 -2.91984,-1.15478 -4.05364,-0.0504c-1.1338,1.10438 -1.15618,2.91984 -0.0504,4.05364l32.96667,33.8121c0.5291,0.54449 1.25698,0.85524 2.01561,0.86505c0.01121,0 0.0252,0 0.03641,0c0.74745,0 1.46693,-0.29254 2.00162,-0.81465l58.76667,-57.33333c1.1338,-1.10579 1.15618,-2.92125 0.0504,-4.05364c-1.10579,-1.1352 -2.91984,-1.152 -4.05364,-0.0504z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white shadow rounded-lg p-6 ">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">{% block totalFailedScenarios %}{% endblock %}</span>
+                        <h3 class="text-base font-normal text-gray-500">Scenarios failed</h3>
+                    </div>
+                    <div class="ml-5 w-0 flex items-center justify-end flex-1 text-red-500 text-base font-bold">
+                        <p class="text-lg mr-2">{% block failedPercentage %}{% endblock %}%</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                             class="w-8 h-8"
+                             viewBox="0 0 172 172"
+                             style=" fill:#000000;">
+                            <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                               stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                               style="mix-blend-mode: normal">
+                                <path d="M0,172v-172h172v172z" fill="none"></path>
+                                <g fill="#e74c3c">
+                                    <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
+                                    <path d="M119.56015,52.43985c-1.11981,-1.11981 -2.93386,-1.11981 -4.05364,0l-29.50651,29.50651l-29.50651,-29.50651c-1.11981,-1.11981 -2.93386,-1.11981 -4.05364,0c-1.11978,1.11981 -1.11981,2.93386 0,4.05364l29.50651,29.50651l-29.50651,29.50651c-1.11981,1.11981 -1.11981,2.93386 0,4.05364c0.55989,0.55989 1.29335,0.83985 2.02682,0.83985c0.73347,0 1.46693,-0.27996 2.02682,-0.83985l29.50651,-29.50651l29.50651,29.50651c0.55989,0.55989 1.29335,0.83985 2.02682,0.83985c0.73347,0 1.46693,-0.27996 2.02682,-0.83985c1.11981,-1.11981 1.11981,-2.93386 0,-4.05364l-29.50651,-29.50651l29.50651,-29.50651c1.11981,-1.11978 1.11981,-2.93386 0,-4.05364z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white shadow rounded-lg p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">{% block totalSkippedScenarios %}{% endblock %}</span>
+                        <h3 class="text-base font-normal text-gray-500">Scenarios skipped</h3>
+                    </div>
+                    <div class="ml-5 w-0 flex items-center justify-end flex-1 text-yellow-500 text-base font-bold">
+                        <p class="text-lg mr-2">{% block skippedPercentage %}{% endblock %}%</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                             class="w-8 h-8"
+                             viewBox="0 0 172 172"
+                             style=" fill:#000000;">
+                            <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                               stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                               style="mix-blend-mode: normal">
+                                <path d="M0,172v-172h172v172z" fill="none"></path>
+                                <g fill="#f1c40f">
+                                    <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
+                                    <path d="M129,83.13333h-86c-1.58449,0 -2.86667,1.28355 -2.86667,2.86667c0,1.58312 1.28217,2.86667 2.86667,2.86667h86c1.58449,0 2.86667,-1.28355 2.86667,-2.86667c0,-1.58312 -1.28217,-2.86667 -2.86667,-2.86667z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 2xl:grid-cols-3 gap-4 my-4 mr-0">
+            <div class="bg-white shadow rounded-lg col-span-2 p-6 h-full">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold leading-none text-gray-900">Features Overview</h3>
+                </div>
+                <div class="flow-root">
+                    <ul role="list" class="divide-y divide-gray-200">
+                        {% block featuresOverview %}{% endblock %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-white shadow rounded-lg col-span-1 p-6 h-full">
+
+                <h3 class="text-xl leading-none font-bold text-gray-900 mb-10">Tags Overview</h3>
+                <div class="block w-full overflow-x-auto">
+                    <table class="items-center w-full bg-transparent border-collapse">
+                        <thead>
+                        <tr>
+                            <th class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap">
+                                Tags
+                            </th>
+                            <th class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap">
+                                Scenarios passed
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                        {% block tagsOverview %}{% endblock %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="p-4 bg-white rounded-lg shadow md:flex md:items-center md:justify-between md:p-6 dark:bg-gray-800">
+    <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">Created with <a href="https://flowbite.com"
+                                                                                          class="hover:underline"
+                                                                                          target="_blank">Flowbite</a>. Plugin available on <a
+            href="https://github.com/ubaifadhli/poke-reporting-plugin" class="hover:underline"
+            target="_blank">Github</a>.
+    </span>
+</footer>
+
+<script src="https://unpkg.com/flowbite@1.3.2/dist/flowbite.js"></script>
+</body>
+</html>

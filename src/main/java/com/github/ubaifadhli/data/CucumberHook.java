@@ -7,9 +7,11 @@ import java.util.List;
 
 @Data
 public class CucumberHook {
-    @JsonIgnore
-    private String match;
+    private CucumberResult result;
 
-    CucumberResult result;
-    List<CucumberEmbedding> embeddings;
+    private List<CucumberEmbedding> embeddings;
+
+
+    @JsonIgnore
+    private Object match;
 }

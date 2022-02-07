@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class CucumberResult {
-    @JsonProperty("error_message")
-    String errorMessage;
+    private Long duration;
+    private String status;
 
-    Long duration;
-    String status;
+    @JsonProperty("error_message")
+    private String errorMessage;
 }

@@ -1,7 +1,6 @@
 package com.github.ubaifadhli.util;
 
 import javax.imageio.ImageIO;
-import javax.inject.Singleton;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -11,50 +10,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Singleton
 public class FileHelper {
-    private final int CHARACTER_LIMIT = 512;
-    private int imageCount = 0;
-    private int textCount = 0;
+    private static final int CHARACTER_LIMIT = 512;
 
-    private String getCurrentImageName() {
-        imageCount++;
-        return "screenshot-" + String.format("%03d", imageCount) + ".png";
-    }
-
-    private String getCurrentTextName() {
-        textCount++;
-        return "text-" + String.format("%03d", textCount) + ".txt";
-    }
-
-    private BufferedImage toImage(byte[] data) throws IOException {
+    private static BufferedImage toImage(byte[] data) throws IOException {
         InputStream inputStream = new ByteArrayInputStream(data);
         return ImageIO.read(inputStream);
     }
 
-    public String saveImage(byte[] data) throws IOException {
-        String currentImageName = getCurrentImageName();
-
-        File imagePath = Paths.get(FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH, currentImageName).toFile();
-
+    public static void saveImage(byte[] data, String imageFilePath) throws IOException {
+        File imagePath = Paths.get(imageFilePath).toFile();
         imagePath.mkdirs();
 
         ImageIO.write(toImage(data), "png", imagePath);
-
-        return currentImageName;
     }
 
-    public String saveText(byte[] data) throws IOException {
-        String currentTextName = getCurrentTextName();
-
-        Path textPath = Paths.get(FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH, currentTextName);
+    public static void saveText(byte[] data, String textFilePath) throws IOException {
+        Path textPath = Paths.get(textFilePath);
+        textPath.toFile().getParentFile().mkdirs();
 
         Files.write(textPath, data);
-
-        return currentTextName;
     }
 
-    public String limitStringLength(byte[] data) {
+    public static String limitStringLength(byte[] data) {
         String dataText = new String(data);
 
         if (dataText.length() > CHARACTER_LIMIT) {
