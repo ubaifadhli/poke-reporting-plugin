@@ -3,118 +3,256 @@
 {% block featureName %}{{data.name}}{% endblock %}
 
 {% block scenarioOverview %}
-    {% for scenario in data.scenarios %}
-        {% if loop.first %}
-        <li data-display-detail="true" class="py-3 sm:py-4 cursor-pointer hover:bg-gray-100">
-        {% else %}
-        <li data-display-detail="false" class="py-3 sm:py-4 cursor-pointer hover:bg-gray-100">
-        {% endif %}
 
+    {% for scenario in data.groupedScenarios %}
+        <div id="accordion-collapse-heading-{{ loop.index }}" class="py-3 sm:py-4 cursor-pointer hover:bg-gray-100" data-accordion-target="#accordion-collapse-body-{{ loop.index }}" aria-expanded="false" aria-controls="accordion-collapse-body-{{ loop.index }}">
+            <div class="flex items-center space-x-6">
+                <div class="flex-1 min-w-0">
+                    <p class="text-md font-medium text-gray-900">
+                        {{ scenario.name }}
+                    </p>
+                    {% for groupedTag in scenario.tagsName %}
+                    <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{{ groupedTag }}</span>
+                    {% endfor %}
+                </div>
+                <div class="inline-flex items-center text-base font-semibold text-gray-900">
+                    {% if scenario.status == "PASSED" %}
+                    <span class="bg-green-100 text-green-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Passed</span>
+                    {% elseif scenario.status == "FAILED" %}
+                    <span class="bg-red-100 text-red-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Failed</span>
+                    {% else %}
+                    <span class="bg-yellow-100 text-yellow-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Skipped</span>
+                    {% endif %}
+                </div>
+                <svg data-accordion-icon class="w-6 h-6 shrink-0 rotate-180" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </div>
+        </div>
+        <div id="accordion-collapse-body-{{ loop.index }}" class="hidden" aria-labelledby="accordion-collapse-heading-{{ loop.index }}">
+            {% for nestedScenario in scenario.scenarios %}
+            <div data-display-detail="false" class="flex items-center space-x-6 px-6 py-2 cursor-pointer hover:bg-gray-100">
+                <p class="flex-1">{{ nestedScenario.parameters }}</p>
+                <div class="inline-flex items-center text-base font-semibold text-gray-900">
+                    {% if nestedScenario.status == "PASSED" %}
+                    <span class="bg-green-100 text-green-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Passed</span>
+                    {% elseif nestedScenario.status == "FAILED" %}
+                    <span class="bg-red-100 text-red-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Failed</span>
+                    {% else %}
+                    <span class="bg-yellow-100 text-yellow-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Skipped</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% endfor %}
+    {% for regularScenario in data.regularScenarios %}
+    <div data-display-detail="false" class="py-3 sm:py-4 cursor-pointer hover:bg-gray-100">
         <div class="flex items-center space-x-6 ">
             <div class="flex-1 min-w-0">
-                <p class="text-md font-medium text-gray-900 truncate">
-                    {{ scenario.name }}
+                <p class="text-md font-medium text-gray-900">
+                    {{ regularScenario.name }}
                 </p>
-
-                {% for tag in scenario.tagsName %}
-                <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{{ tag }}</span>
+                {% for regularTag in regularScenario.tagsName %}
+                <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{{ regularTag }}</span>
                 {% endfor %}
             </div>
             <div class="inline-flex items-center text-base font-semibold text-gray-900">
-                {% if scenario.status == "PASSED" %}
+                {% if regularScenario.status == "PASSED" %}
                 <span class="bg-green-100 text-green-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Passed</span>
-                {% elseif scenario.status == "FAILED" %}
+                {% elseif regularScenario.status == "FAILED" %}
                 <span class="bg-red-100 text-red-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Failed</span>
                 {% else %}
                 <span class="bg-yellow-100 text-yellow-800 font-semibold mr-2 px-2.5 py-0.5 rounded">Skipped</span>
                 {% endif %}
             </div>
         </div>
-    </li>
+    </div>
     {% endfor %}
 {% endblock %}
 
 {% block executionDetail %}
-    {% for scenario in data.scenarios %}
-        {% if loop.first %}
-        <ol class="relative border-l border-gray-200 dark:border-gray-700">
+
+
+{% for groupedScenario in data.groupedScenarios %}
+{% for scenario in groupedScenario.scenarios %}
+<ol class="relative border-l border-gray-200 dark:border-gray-700 hidden">
+
+    {% for step in scenario.steps %}
+    <li class="mb-10 ml-6">
+        {% if step.status == "PASSED" %}
+        <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-green-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                           class="w-8 h-8"
+                           viewBox="0 0 172 172"
+                           style=" fill:#000000;">
+                                        <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                                           stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                                           style="mix-blend-mode: normal">
+                                            <path d="M0,172v-172h172v172z" fill="none"></path>
+                                            <g fill="#2ecc71">
+                                                <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
+                                                <path d="M129.86505,58.14798l-56.71465,55.33031l-30.96505,-31.75868c-1.10301,-1.13239 -2.91984,-1.15478 -4.05364,-0.0504c-1.1338,1.10438 -1.15618,2.91984 -0.0504,4.05364l32.96667,33.8121c0.5291,0.54449 1.25698,0.85524 2.01561,0.86505c0.01121,0 0.0252,0 0.03641,0c0.74745,0 1.46693,-0.29254 2.00162,-0.81465l58.76667,-57.33333c1.1338,-1.10579 1.15618,-2.92125 0.0504,-4.05364c-1.10579,-1.1352 -2.91984,-1.152 -4.05364,-0.0504z"></path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                    </span>
+        {% elseif step.status == "FAILED" %}
+        <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-red-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                           class="w-8 h-8"
+                           viewBox="0 0 172 172"
+                           style=" fill:#000000;">
+                                    <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                                       stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                                       style="mix-blend-mode: normal">
+                                        <path d="M0,172v-172h172v172z" fill="none"></path>
+                                        <g fill="#e74c3c">
+                                            <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
+                                            <path d="M119.56015,52.43985c-1.11981,-1.11981 -2.93386,-1.11981 -4.05364,0l-29.50651,29.50651l-29.50651,-29.50651c-1.11981,-1.11981 -2.93386,-1.11981 -4.05364,0c-1.11978,1.11981 -1.11981,2.93386 0,4.05364l29.50651,29.50651l-29.50651,29.50651c-1.11981,1.11981 -1.11981,2.93386 0,4.05364c0.55989,0.55989 1.29335,0.83985 2.02682,0.83985c0.73347,0 1.46693,-0.27996 2.02682,-0.83985l29.50651,-29.50651l29.50651,29.50651c0.55989,0.55989 1.29335,0.83985 2.02682,0.83985c0.73347,0 1.46693,-0.27996 2.02682,-0.83985c1.11981,-1.11981 1.11981,-2.93386 0,-4.05364l-29.50651,-29.50651l29.50651,-29.50651c1.11981,-1.11978 1.11981,-2.93386 0,-4.05364z"></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                    </span>
         {% else %}
-        <ol class="relative border-l border-gray-200 dark:border-gray-700 hidden">
+        <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-yellow-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                           class="w-8 h-8"
+                           viewBox="0 0 172 172"
+                           style=" fill:#000000;">
+                                    <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                                       stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                                       style="mix-blend-mode: normal">
+                                        <path d="M0,172v-172h172v172z" fill="none"></path>
+                                        <g fill="#f1c40f">
+                                            <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
+                                            <path d="M129,83.13333h-86c-1.58449,0 -2.86667,1.28355 -2.86667,2.86667c0,1.58312 1.28217,2.86667 2.86667,2.86667h86c1.58449,0 2.86667,-1.28355 2.86667,-2.86667c0,-1.58312 -1.28217,-2.86667 -2.86667,-2.86667z"></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                    </span>
         {% endif %}
 
-        {% for step in scenario.steps %}
-        <li class="mb-10 ml-6">
-            {% if step.status == "PASSED" %}
-            <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-green-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                   class="w-8 h-8"
-                   viewBox="0 0 172 172"
-                   style=" fill:#000000;">
+        <div>
+            <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-white">{{ step.name }}</h3>
+
+            {% if step.status == "FAILED" %}
+            <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+                <p class="whitespace-pre-wrap">{{ step.errorMessage }}</p>
+            </div>
+            {% endif %}
+
+            {% for hook in step.after %}
+            {% if hook.logText is not null %}
+            <div class="block p-4 text-sm bg-white rounded-lg border border-gray-200 shadow-md w-full">
+                <p class="whitespace-pre-wrap">{{ hook.logText }}</p>
+                <div class="items-center text-cyan-600">
+                    <a href="{{ hook.filename }}" target="_blank" class="hover:underline font-semibold">Full log</a>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if hook.filename is not null and hook.filename contains "png" %}
+            <img class="rounded-md mr-3 h-48"
+                 src="{{ hook.filename }}"
+                 alt="Pikachu">
+            {% endif %}
+            {% endfor %}
+        </div>
+    </li>
+
+    {% endfor %}
+</ol>
+{% endfor %}
+{% endfor %}
+
+{% for scenario in data.regularScenarios %}
+<ol class="relative border-l border-gray-200 dark:border-gray-700 hidden">
+
+    {% for step in scenario.steps %}
+    <li class="mb-10 ml-6">
+        {% if step.status == "PASSED" %}
+        <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-green-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                       class="w-8 h-8"
+                       viewBox="0 0 172 172"
+                       style=" fill:#000000;">
+                                    <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                                       stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                                       style="mix-blend-mode: normal">
+                                        <path d="M0,172v-172h172v172z" fill="none"></path>
+                                        <g fill="#2ecc71">
+                                            <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
+                                            <path d="M129.86505,58.14798l-56.71465,55.33031l-30.96505,-31.75868c-1.10301,-1.13239 -2.91984,-1.15478 -4.05364,-0.0504c-1.1338,1.10438 -1.15618,2.91984 -0.0504,4.05364l32.96667,33.8121c0.5291,0.54449 1.25698,0.85524 2.01561,0.86505c0.01121,0 0.0252,0 0.03641,0c0.74745,0 1.46693,-0.29254 2.00162,-0.81465l58.76667,-57.33333c1.1338,-1.10579 1.15618,-2.92125 0.0504,-4.05364c-1.10579,-1.1352 -2.91984,-1.152 -4.05364,-0.0504z"></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                </span>
+        {% elseif step.status == "FAILED" %}
+        <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-red-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                       class="w-8 h-8"
+                       viewBox="0 0 172 172"
+                       style=" fill:#000000;">
                                 <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
                                    stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
                                    style="mix-blend-mode: normal">
                                     <path d="M0,172v-172h172v172z" fill="none"></path>
-                                    <g fill="#2ecc71">
+                                    <g fill="#e74c3c">
                                         <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
-                                        <path d="M129.86505,58.14798l-56.71465,55.33031l-30.96505,-31.75868c-1.10301,-1.13239 -2.91984,-1.15478 -4.05364,-0.0504c-1.1338,1.10438 -1.15618,2.91984 -0.0504,4.05364l32.96667,33.8121c0.5291,0.54449 1.25698,0.85524 2.01561,0.86505c0.01121,0 0.0252,0 0.03641,0c0.74745,0 1.46693,-0.29254 2.00162,-0.81465l58.76667,-57.33333c1.1338,-1.10579 1.15618,-2.92125 0.0504,-4.05364c-1.10579,-1.1352 -2.91984,-1.152 -4.05364,-0.0504z"></path>
+                                        <path d="M119.56015,52.43985c-1.11981,-1.11981 -2.93386,-1.11981 -4.05364,0l-29.50651,29.50651l-29.50651,-29.50651c-1.11981,-1.11981 -2.93386,-1.11981 -4.05364,0c-1.11978,1.11981 -1.11981,2.93386 0,4.05364l29.50651,29.50651l-29.50651,29.50651c-1.11981,1.11981 -1.11981,2.93386 0,4.05364c0.55989,0.55989 1.29335,0.83985 2.02682,0.83985c0.73347,0 1.46693,-0.27996 2.02682,-0.83985l29.50651,-29.50651l29.50651,29.50651c0.55989,0.55989 1.29335,0.83985 2.02682,0.83985c0.73347,0 1.46693,-0.27996 2.02682,-0.83985c1.11981,-1.11981 1.11981,-2.93386 0,-4.05364l-29.50651,-29.50651l29.50651,-29.50651c1.11981,-1.11978 1.11981,-2.93386 0,-4.05364z"></path>
                                     </g>
                                 </g>
                             </svg>
-            </span>
-            {% elseif step.status == "FAILED" %}
-            <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-red-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                   class="w-8 h-8"
-                   viewBox="0 0 172 172"
-                   style=" fill:#000000;">
-                            <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
-                               stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
-                               style="mix-blend-mode: normal">
-                                <path d="M0,172v-172h172v172z" fill="none"></path>
-                                <g fill="#e74c3c">
-                                    <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
-                                    <path d="M119.56015,52.43985c-1.11981,-1.11981 -2.93386,-1.11981 -4.05364,0l-29.50651,29.50651l-29.50651,-29.50651c-1.11981,-1.11981 -2.93386,-1.11981 -4.05364,0c-1.11978,1.11981 -1.11981,2.93386 0,4.05364l29.50651,29.50651l-29.50651,29.50651c-1.11981,1.11981 -1.11981,2.93386 0,4.05364c0.55989,0.55989 1.29335,0.83985 2.02682,0.83985c0.73347,0 1.46693,-0.27996 2.02682,-0.83985l29.50651,-29.50651l29.50651,29.50651c0.55989,0.55989 1.29335,0.83985 2.02682,0.83985c0.73347,0 1.46693,-0.27996 2.02682,-0.83985c1.11981,-1.11981 1.11981,-2.93386 0,-4.05364l-29.50651,-29.50651l29.50651,-29.50651c1.11981,-1.11978 1.11981,-2.93386 0,-4.05364z"></path>
+                </span>
+        {% else %}
+        <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-yellow-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                       class="w-8 h-8"
+                       viewBox="0 0 172 172"
+                       style=" fill:#000000;">
+                                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                                   stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                                   style="mix-blend-mode: normal">
+                                    <path d="M0,172v-172h172v172z" fill="none"></path>
+                                    <g fill="#f1c40f">
+                                        <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
+                                        <path d="M129,83.13333h-86c-1.58449,0 -2.86667,1.28355 -2.86667,2.86667c0,1.58312 1.28217,2.86667 2.86667,2.86667h86c1.58449,0 2.86667,-1.28355 2.86667,-2.86667c0,-1.58312 -1.28217,-2.86667 -2.86667,-2.86667z"></path>
+                                    </g>
                                 </g>
-                            </g>
-                        </svg>
-            </span>
-            {% else %}
-            <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-yellow-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-                   class="w-8 h-8"
-                   viewBox="0 0 172 172"
-                   style=" fill:#000000;">
-                            <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
-                               stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
-                               style="mix-blend-mode: normal">
-                                <path d="M0,172v-172h172v172z" fill="none"></path>
-                                <g fill="#f1c40f">
-                                    <path d="M86,0c-47.42037,0 -86,38.57963 -86,86c0,47.42037 38.57963,86 86,86c47.42037,0 86,-38.57963 86,-86c0,-47.42037 -38.57963,-86 -86,-86zM86,166.26667c-44.25976,0 -80.26667,-36.00691 -80.26667,-80.26667c0,-44.25976 36.00691,-80.26667 80.26667,-80.26667c44.25976,0 80.26667,36.00691 80.26667,80.26667c0,44.25976 -36.00691,80.26667 -80.26667,80.26667z"></path>
-                                    <path d="M129,83.13333h-86c-1.58449,0 -2.86667,1.28355 -2.86667,2.86667c0,1.58312 1.28217,2.86667 2.86667,2.86667h86c1.58449,0 2.86667,-1.28355 2.86667,-2.86667c0,-1.58312 -1.28217,-2.86667 -2.86667,-2.86667z"></path>
-                                </g>
-                            </g>
-                        </svg>
-            </span>
+                            </svg>
+                </span>
+        {% endif %}
+
+        <div>
+            <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-white">{{ step.name }}</h3>
+
+            {% if step.status == "FAILED" %}
+            <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+                <p class="whitespace-pre-wrap">{{ step.errorMessage }}</p>
+            </div>
             {% endif %}
 
-            <div>
-                <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-white">{{ step.name }}</h3>
+            {% for hook in step.after %}
+                {% if hook.logText is not null %}
+                <div class="block p-4 text-sm bg-white rounded-lg border border-gray-200 shadow-md w-full">
+                    <p class="whitespace-pre-wrap">{{ hook.logText }}</p>
+                    <div class="items-center text-cyan-600">
+                        <a href="{{ hook.filename }}" target="_blank" class="hover:underline font-semibold">Full log</a>
+                    </div>
+                </div>
+                {% endif %}
 
-                {% for hook in step.afterHooksWithEmbeddings %}
-                    {% if hook.filename contains "png" %}
-                    <img class="rounded-md mr-3 h-20"
-                         src="{{ hook.filename }}"
-                         alt="Pikachu">
-                    {% endif %}
-                {% endfor %}
+                {% if hook.filename is not null and hook.filename contains "png" %}
+                <img class="rounded-md mr-3 h-48"
+                     src="{{ hook.filename }}"
+                     alt="Pikachu">
+                {% endif %}
+            {% endfor %}
+        </div>
+    </li>
 
-<!--                <img class="rounded-md mr-3 h-20"-->
-<!--                     src="https://media.wired.com/photos/5f87340d114b38fa1f8339f9/master/w_1600%2Cc_limit/Ideas_Surprised_Pikachu_HD.jpg"-->
-<!--                     alt="Pikachu">-->
-            </div>
-        </li>
-
-        {% endfor %}
-    </ol>
     {% endfor %}
+</ol>
+{% endfor %}
+
 {% endblock %}

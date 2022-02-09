@@ -14,4 +14,14 @@ public class CucumberHook {
 
     @JsonIgnore
     private Object match;
+
+    // Inevitable custom variables because of current handler's structure.
+    @JsonIgnore
+    private String logText;
+    @JsonIgnore
+    private String filename;
+
+    public CucumberEmbedding getFirstEmbedding() {
+        return embeddings.get(0);
+    }
 }

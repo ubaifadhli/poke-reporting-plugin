@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/flowbite@1.3.2/dist/flowbite.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/flowbite@1.3.3/dist/flowbite.min.css"/>
 </head>
 <body>
 <nav class="bg-white border-gray-200 px-2 sm:px-4 py-4 rounded">
@@ -48,9 +48,9 @@
           <h3 class="text-xl font-bold leading-none text-gray-900">Scenarios</h3>
         </div>
         <div class="flow-root max-h-screen overflow-y-auto">
-          <ul role="list" class="divide-y divide-gray-200">
+          <div role="list" class="divide-y divide-gray-200" id="accordion-collapse" data-accordion="collapse">
               {% block scenarioOverview %}{% endblock %}
-          </ul>
+          </div>
         </div>
       </div>
 
@@ -74,10 +74,10 @@
 </footer>
 
 <script type="text/javascript">
-  const SCENARIO_BUTTONS = "ul[role=list] > li"
+  const SCENARIO_BUTTONS = "div[role=list] [data-display-detail]"
   const DETAIL_SECTIONS = "div#execution-detail > ol"
 
-  const CURRENTLY_SELECTED_SCENARIO_BUTTON = SCENARIO_BUTTONS + "[data-display-detail=true]"
+  const CURRENTLY_SELECTED_SCENARIO_BUTTON = "div[role=list] [data-display-detail=true]"
   const CURRENTLY_DISPLAYED_DETAIL_SECTION = DETAIL_SECTIONS + ":not(.hidden)"
 
   let scenarioButtons = document.querySelectorAll(SCENARIO_BUTTONS)
@@ -85,10 +85,12 @@
   scenarioButtons.forEach((element, index) => {
     element.addEventListener("click", () => {
       let previouslySelectedButton = document.querySelector(CURRENTLY_SELECTED_SCENARIO_BUTTON)
-      previouslySelectedButton.setAttribute("data-display-detail", "false")
+      if (previouslySelectedButton)
+        previouslySelectedButton.setAttribute("data-display-detail", "false")
 
       let previouslyDisplayedSection = document.querySelector(CURRENTLY_DISPLAYED_DETAIL_SECTION)
-      previouslyDisplayedSection.classList.add("hidden")
+      if (previouslyDisplayedSection)
+        previouslyDisplayedSection.classList.add("hidden")
 
       element.setAttribute("data-display-detail", "true")
 
@@ -99,6 +101,6 @@
   })
 </script>
 
-<script src="https://unpkg.com/flowbite@1.3.2/dist/flowbite.js"></script>
+<script src="https://unpkg.com/flowbite@1.3.3/dist/flowbite.js"></script>
 </body>
 </html>

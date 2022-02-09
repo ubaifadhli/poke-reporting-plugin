@@ -184,50 +184,48 @@ public class CucumberDataHandler {
         // TODO Currently only handles AfterStep, should be able to handle BeforeStep,
         //  BeforeScenario and AfterScenario in the future.
 
-        List<Hook> hooksWithEmbeddings = getFeatures().stream()
-                .map(Feature::getScenarios)
-                .flatMap(Collection::stream)
-                .map(Scenario::getSteps)
-                .flatMap(Collection::stream)
-                .map(Step::getAfterHooksWithEmbeddings)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        System.out.println("lewat hooks");
-
         Map<SupportedMIMEType, Integer> generatedFileCount = new HashMap<>();
 
-        for (Hook hook : hooksWithEmbeddings) {
-            CucumberEmbedding embedding = hook.getEmbedding();
+        for (CucumberFeature cucumberFeature : cucumberFeatures)
+            for (CucumberScenario cucumberScenario : cucumberFeature.getScenarios())
+                for (CucumberStep cucumberStep : cucumberScenario.getSteps()) {
+                    List<CucumberHook> hooksWithEmbeddings = cucumberStep.getAfter()
+                            .stream()
+                            .filter(Objects::nonNull)
+                            .filter(hook -> hook.getEmbeddings() != null && hook.getEmbeddings().size() > 0)
+                            .collect(Collectors.toList());
 
-            SupportedMIMEType currentMIMEType = SupportedMIMEType.valueOfMIMEType(embedding.getMimeType());
+                    for (CucumberHook hook : hooksWithEmbeddings) {
+                        CucumberEmbedding embedding = hook.getFirstEmbedding();
 
-            if (!generatedFileCount.containsKey(currentMIMEType))
-                generatedFileCount.put(currentMIMEType, 1);
+                        SupportedMIMEType currentMIMEType = SupportedMIMEType.valueOfMIMEType(embedding.getMimeType());
 
-            String baseDirectory = reportDestinationDirectory + FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH;
-            String filename = "";
+                        if (!generatedFileCount.containsKey(currentMIMEType))
+                            generatedFileCount.put(currentMIMEType, 1);
 
-            switch (currentMIMEType) {
-                case IMAGE_PNG:
-                    filename = "image-" + generatedFileCount.get(currentMIMEType) + ".png";
-                    String imagePath = baseDirectory + filename;
-                    FileHelper.saveImage(hook.getEmbedding().getData(), imagePath);
-                    break;
+                        String baseDirectory = reportDestinationDirectory + FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH;
+                        String filename = "";
 
-                case PLAIN_TEXT:
-                    hook.setLogText(FileHelper.limitStringLength(hook.getEmbedding().getData()));
+                        switch (currentMIMEType) {
+                            case IMAGE_PNG:
+                                filename = "image-" + generatedFileCount.get(currentMIMEType) + ".png";
+                                String imagePath = baseDirectory + filename;
+                                FileHelper.saveImage(hook.getFirstEmbedding().getData(), imagePath);
+                                break;
 
-                    filename = "log-" + generatedFileCount.get(currentMIMEType) + ".txt";
-                    String textPath = baseDirectory + filename;
-                    FileHelper.saveText(hook.getEmbedding().getData(), textPath);
-                    break;
-            }
+                            case PLAIN_TEXT:
+                                hook.setLogText(FileHelper.limitStringLength(hook.getFirstEmbedding().getData()));
 
-            hook.setFilename(FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH + filename);
-            System.out.println(hook.getFilename());
-            generatedFileCount.put(currentMIMEType, generatedFileCount.get(currentMIMEType) + 1);
-        }
+                                filename = "log-" + generatedFileCount.get(currentMIMEType) + ".txt";
+                                String textPath = baseDirectory + filename;
+                                FileHelper.saveText(hook.getFirstEmbedding().getData(), textPath);
+                                break;
+                        }
+
+                        hook.setFilename(FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH + filename);
+                        generatedFileCount.put(currentMIMEType, generatedFileCount.get(currentMIMEType) + 1);
+                    }
+                }
     }
 
     public class Feature {
@@ -282,6 +280,24 @@ public class CucumberDataHandler {
         public List<String> getTagsName() {
             return cucumberFeature.getTags().stream()
                     .map(CucumberTag::getName)
+                    .collect(Collectors.toList());
+        }
+
+        public List<GroupedScenarios> getGroupedScenarios() {
+            return getScenarios()
+                    .stream()
+                    .filter(Scenario::hasOutline)
+                    .collect(Collectors.groupingBy(Scenario::getCommonID))
+                    .values()
+                    .stream()
+                    .map(GroupedScenarios::new)
+                    .collect(Collectors.toList());
+        }
+
+        public List<Scenario> getRegularScenarios() {
+            return getScenarios()
+                    .stream()
+                    .filter(Scenario::doesNotHaveOutline)
                     .collect(Collectors.toList());
         }
     }
@@ -351,8 +367,12 @@ public class CucumberDataHandler {
             return CucumberResultStatus.FAILED;
         }
 
+        public List<String> getTagsName() {
+            return scenarios.get(0).getTagsName();
+        }
+
         public String getName() {
-            return scenarios.get(0).getName();
+            return scenarios.get(0).getCommonID();
             // FIXME
         }
 
@@ -379,9 +399,27 @@ public class CucumberDataHandler {
             return cucumberScenario.getKeyword().equals("Scenario Outline");
         }
 
+        public boolean doesNotHaveOutline() {
+            return !hasOutline();
+        }
+
         public String getParameters() {
-            return cucumberScenario.getName();
-            // FIXME
+            // I know this regex looks horribly bad but removing characters outside quotation mark
+            // does its job better because java 8 doesn't support global regex.
+            String regex = "(?:[^\"](?=[^\"]*?(?:[\"][^\"]*?[\"][^\"]*?)+$|[^\"]*?$))*|(^[^\"]*[\"][^\"]*$)";
+
+            return cucumberScenario.getName()
+                    .replaceAll(regex, "")
+                    .replace("\"\"", " | ")
+                    .replace("\"", " ");
+        }
+
+        public String getCommonID() {
+            String commonID = cucumberScenario.getId().split("[;]+")[1];
+            return commonID
+                    .replace("-", " ")
+                    .replace("<", "")
+                    .replace(">", "");
         }
 
         public String getName() {
@@ -502,6 +540,13 @@ public class CucumberDataHandler {
             return duration;
         }
 
+        public List<Hook> getAfter() {
+            return cucumberStep.getAfter()
+                    .stream()
+                    .map(Hook::new)
+                    .collect(Collectors.toList());
+        }
+
         public boolean hasBefore() {
             return cucumberStep.getBefore() != null && cucumberStep.getBefore().size() > 0;
         }
@@ -533,47 +578,21 @@ public class CucumberDataHandler {
         private boolean hasResultDuration() {
             return cucumberStep.getResult().getDuration() != null;
         }
-
-        public List<Hook> getAfterHooksWithEmbeddings() {
-            return cucumberStep.getAfter()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    // Has to be checked first otherwise would return exception when instantiated to Hook.
-                    .filter(after -> after.getEmbeddings() != null && after.getEmbeddings().size() > 0)
-                    .map(Hook::new)
-                    .collect(Collectors.toList());
-        }
     }
 
     public class Hook {
         private CucumberHook cucumberHook;
-        private String filename;
-        private String logText;
 
         public Hook(CucumberHook cucumberHook) {
             this.cucumberHook = cucumberHook;
         }
 
         public String getLogText() {
-            return logText;
-        }
-
-        public void setLogText(String logText) {
-            this.logText = logText;
+            return cucumberHook.getLogText();
         }
 
         public String getFilename() {
-            return filename;
-        }
-
-        public void setFilename(String filename) {
-            this.filename = filename;
-        }
-
-        // TODO Defaulting it to only 1 CucumberEmbedding to process for now,
-        //  should be supporting more in the future.
-        public CucumberEmbedding getEmbedding() {
-            return cucumberHook.getEmbeddings().get(0);
+            return cucumberHook.getFilename();
         }
     }
 }
