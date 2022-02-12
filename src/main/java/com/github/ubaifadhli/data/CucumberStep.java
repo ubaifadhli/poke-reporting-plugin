@@ -21,4 +21,6 @@ public class CucumberStep {
     private String keyword;
     @JsonIgnore
     private List<CucumberHook> before;
+    @JsonIgnore
+    private List<Object> rows;
 }
