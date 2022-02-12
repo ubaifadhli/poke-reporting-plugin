@@ -187,45 +187,47 @@ public class CucumberDataHandler {
         Map<SupportedMIMEType, Integer> generatedFileCount = new HashMap<>();
 
         for (CucumberFeature cucumberFeature : cucumberFeatures)
-            for (CucumberScenario cucumberScenario : cucumberFeature.getScenarios())
-                for (CucumberStep cucumberStep : cucumberScenario.getSteps()) {
-                    List<CucumberHook> hooksWithEmbeddings = cucumberStep.getAfter()
-                            .stream()
-                            .filter(Objects::nonNull)
-                            .filter(hook -> hook.getEmbeddings() != null && hook.getEmbeddings().size() > 0)
-                            .collect(Collectors.toList());
+            for (CucumberScenario cucumberScenario : cucumberFeature.getScenarios()) {
+                List<CucumberHook> hooksWithEmbeddings = cucumberScenario.getSteps()
+                        .stream()
+                        .filter(step -> step.getAfter() != null)
+                        .map(CucumberStep::getAfter)
+                        .flatMap(Collection::stream)
+                        .filter(Objects::nonNull)
+                        .filter(hook -> hook.getEmbeddings() != null && hook.getEmbeddings().size() > 0)
+                        .collect(Collectors.toList());
 
-                    for (CucumberHook hook : hooksWithEmbeddings) {
-                        CucumberEmbedding embedding = hook.getFirstEmbedding();
+                for (CucumberHook hook : hooksWithEmbeddings) {
+                    CucumberEmbedding embedding = hook.getFirstEmbedding();
 
-                        SupportedMIMEType currentMIMEType = SupportedMIMEType.valueOfMIMEType(embedding.getMimeType());
+                    SupportedMIMEType currentMIMEType = SupportedMIMEType.valueOfMIMEType(embedding.getMimeType());
 
-                        if (!generatedFileCount.containsKey(currentMIMEType))
-                            generatedFileCount.put(currentMIMEType, 1);
+                    if (!generatedFileCount.containsKey(currentMIMEType))
+                        generatedFileCount.put(currentMIMEType, 1);
 
-                        String baseDirectory = reportDestinationDirectory + FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH;
-                        String filename = "";
+                    String baseDirectory = reportDestinationDirectory + FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH;
+                    String filename = "";
 
-                        switch (currentMIMEType) {
-                            case IMAGE_PNG:
-                                filename = "image-" + generatedFileCount.get(currentMIMEType) + ".png";
-                                String imagePath = baseDirectory + filename;
-                                FileHelper.saveImage(hook.getFirstEmbedding().getData(), imagePath);
-                                break;
+                    switch (currentMIMEType) {
+                        case IMAGE_PNG:
+                            filename = "image-" + generatedFileCount.get(currentMIMEType) + ".png";
+                            String imagePath = baseDirectory + filename;
+                            FileHelper.saveImage(hook.getFirstEmbedding().getData(), imagePath);
+                            break;
 
-                            case PLAIN_TEXT:
-                                hook.setLogText(FileHelper.limitStringLength(hook.getFirstEmbedding().getData()));
+                        case PLAIN_TEXT:
+                            hook.setLogText(FileHelper.limitStringLength(hook.getFirstEmbedding().getData()));
 
-                                filename = "log-" + generatedFileCount.get(currentMIMEType) + ".txt";
-                                String textPath = baseDirectory + filename;
-                                FileHelper.saveText(hook.getFirstEmbedding().getData(), textPath);
-                                break;
-                        }
-
-                        hook.setFilename(FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH + filename);
-                        generatedFileCount.put(currentMIMEType, generatedFileCount.get(currentMIMEType) + 1);
+                            filename = "log-" + generatedFileCount.get(currentMIMEType) + ".txt";
+                            String textPath = baseDirectory + filename;
+                            FileHelper.saveText(hook.getFirstEmbedding().getData(), textPath);
+                            break;
                     }
+
+                    hook.setFilename(FilePath.DEFAULT_REPORT_ATTACHMENTS_PATH + filename);
+                    generatedFileCount.put(currentMIMEType, generatedFileCount.get(currentMIMEType) + 1);
                 }
+            }
     }
 
     public class Feature {

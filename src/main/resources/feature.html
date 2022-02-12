@@ -165,12 +165,13 @@
 {% endfor %}
 {% endfor %}
 
-{% for scenario in data.regularScenarios %}
+<!--regular scenarios here-->
+{% for regScenario in data.regularScenarios %}
 <ol class="relative border-l border-gray-200 dark:border-gray-700 hidden">
 
-    {% for step in scenario.steps %}
+    {% for regStep in regScenario.steps %}
     <li class="mb-10 ml-6">
-        {% if step.status == "PASSED" %}
+        {% if regStep.status == "PASSED" %}
         <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-green-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
                   <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                        class="w-8 h-8"
@@ -187,7 +188,7 @@
                                     </g>
                                 </svg>
                 </span>
-        {% elseif step.status == "FAILED" %}
+        {% elseif regStep.status == "FAILED" %}
         <span class="flex absolute -left-3 justify-center items-center w-6 h-6 bg-red-200 rounded-full ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
                   <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                        class="w-8 h-8"
@@ -224,30 +225,33 @@
         {% endif %}
 
         <div>
-            <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-white">{{ step.name }}</h3>
+            <h3 class="mb-1 text-lg font-semibold text-gray-900 dark:text-white">{{ regStep.name }}</h3>
 
-            {% if step.status == "FAILED" %}
+            {% if regStep.status == "FAILED" %}
             <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
-                <p class="whitespace-pre-wrap">{{ step.errorMessage }}</p>
+                <p class="whitespace-pre-wrap">{{ regStep.errorMessage }}</p>
             </div>
             {% endif %}
 
-            {% for hook in step.after %}
-                {% if hook.logText is not null %}
-                <div class="block p-4 text-sm bg-white rounded-lg border border-gray-200 shadow-md w-full">
-                    <p class="whitespace-pre-wrap">{{ hook.logText }}</p>
-                    <div class="items-center text-cyan-600">
-                        <a href="{{ hook.filename }}" target="_blank" class="hover:underline font-semibold">Full log</a>
+            {% if regStep.hasAfter %}
+                {% for regHook in regStep.after %}
+                    {% if regHook.logText is not null %}
+                    <div class="block p-4 text-sm bg-white rounded-lg border border-gray-200 shadow-md w-full">
+                        <p class="whitespace-pre-wrap">{{ regHook.logText }}</p>
+                        <div class="items-center text-cyan-600">
+                            <a href="{{ regHook.filename }}" target="_blank" class="hover:underline font-semibold">Full log</a>
+                        </div>
                     </div>
-                </div>
-                {% endif %}
+                    {% endif %}
 
-                {% if hook.filename is not null and hook.filename contains "png" %}
-                <img class="rounded-md mr-3 h-48"
-                     src="{{ hook.filename }}"
-                     alt="Pikachu">
-                {% endif %}
-            {% endfor %}
+                    {% if regHook.filename is not null and regHook.filename contains "png" %}
+                    <img class="rounded-md mr-3 h-48"
+                         src="{{ regHook.filename }}"
+                         alt="Pikachu">
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
         </div>
     </li>
 
