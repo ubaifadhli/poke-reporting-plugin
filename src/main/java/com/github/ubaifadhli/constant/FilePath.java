@@ -7,4 +7,5 @@ public interface FilePath {
     String DEFAULT_REPORT_ATTACHMENTS_PATH = "attachments/";
     String DASHBOARD_TEMPLATE_FILE_NAME = "dashboard.html";
     String FEATURES_TEMPLATE_FILE_NAME = "feature.html";
+    String EMAIL_TEMPLATE_FILE_NAME = "email.html";
 }

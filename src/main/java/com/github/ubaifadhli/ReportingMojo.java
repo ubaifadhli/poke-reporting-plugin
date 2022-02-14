@@ -64,6 +64,17 @@ public class ReportingMojo extends AbstractMojo {
             }
         }
 
+        // Generate report for Email
+        try {
+            TemplateEngine.generateWebpage(
+                    cucumberDataHandler,
+                    FilePath.EMAIL_TEMPLATE_FILE_NAME,
+                    reportDestinationDirectory + FilePath.EMAIL_TEMPLATE_FILE_NAME
+            );
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to generate email webpage.", e);
+        }
+
         long endTime = System.currentTimeMillis();
         Duration elapsedTime = DatetimeHelper.between(new Timestamp(startTime), new Timestamp(endTime));
 
